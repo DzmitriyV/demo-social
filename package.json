@@ -2,7 +2,7 @@
   "name": "it-kam",
   "version": "0.1.0",
   "private": true,
-  "homepage" : "https://dzmitriyv.github.io/demo-social",
+  "homepage": "https://dzmitriyv.github.io/demo-social",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
