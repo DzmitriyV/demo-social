@@ -1,4 +1,5 @@
 import {profileApi, usersApi} from "../api/api";
+import {stopSubmit} from "redux-form";
 
 const ADD_POST = 'kamasutra-network/profile/ADD-POST'
 const SET_USER_PROFILE = 'kamasutra-network/profile/SET_USER_PROFILE'
@@ -96,6 +97,20 @@ export const savePhoto = (file) => async (dispatch) => {
 
     if(data.resultCode === 0) {
         dispatch(savePhotoSuccess(data.data.photos))
+    }
+}
+
+export const saveProfile = (profile) => async (dispatch, getState) => {
+
+    const userId = getState().auth.userId
+    const data = await profileApi.saveProfile(profile)
+
+    if(data.resultCode === 0) {
+        dispatch(getUserProfile(userId))
+    } else {
+        let message= data.messages.length > 0 ? data.messages[0] : 'Some error'
+        dispatch(stopSubmit('profile-data', {_error: message}))
+        return Promise.reject(message)
     }
 }
 

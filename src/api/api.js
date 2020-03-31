@@ -48,6 +48,10 @@ export const profileApi = {
                 'Content-Type': 'multipart/form-data'
             }
         }).then(response => response.data)
+    } ,
+    saveProfile(profile) {
+        return instance.put(`profile`, profile)
+            .then(response => response.data)
     }
 }
 
