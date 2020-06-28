@@ -1,5 +1,6 @@
 import {profileApi, usersApi} from "../api/api";
 import {stopSubmit} from "redux-form";
+import {PhotosType, PostType, ProfileType} from "../types/types";
 
 const ADD_POST = 'kamasutra-network/profile/ADD-POST'
 const SET_USER_PROFILE = 'kamasutra-network/profile/SET_USER_PROFILE'
@@ -19,12 +20,15 @@ let initialState = {
             message: `It's my first post`,
             likesCount: 11
         },
-    ],
-    profile: null,
-    status: ''
+    ] as Array<PostType>,
+    profile: null as ProfileType | null,
+    status: '',
+    newPostText: ''
 }
 
-const profileReducer = (state = initialState, action) => {
+export type InitialStateType = typeof initialState
+
+const profileReducer = (state = initialState, action: any): InitialStateType => {
     switch (action.type) {
         case ADD_POST: {
             let newPost = {
@@ -35,6 +39,7 @@ const profileReducer = (state = initialState, action) => {
             return {
                 ...state,
                 posts: [...state.posts, newPost],
+                newPostText: ''
             }
         }
         case SET_USER_PROFILE: {
@@ -58,7 +63,7 @@ const profileReducer = (state = initialState, action) => {
         case SAVE_PHOTO_SUCCESS: {
             return {
                 ...state,
-                profile: {...state.profile, photos: action.photos}
+                profile: {...state.profile, photos: action.photos} as ProfileType
             }
         }
         default:
@@ -66,25 +71,44 @@ const profileReducer = (state = initialState, action) => {
     }
 }
 
-export const addPostCreator = (newPostText) =>  ({type: ADD_POST, newPostText})
-export const setUserProfile = (profile) => ({type: SET_USER_PROFILE, profile})
-export const setStatus = (status) => ({type: SET_STATUS, status})
-export const deletePost = (postId) => ({type: DELETE_POST, postId})
-export const savePhotoSuccess = (photos) => ({type: SAVE_PHOTO_SUCCESS, photos})
-
-export const getUserProfile = (userId) => async (dispatch) => {
+type AddPostActionType = {
+    type: typeof ADD_POST
+    newPostText: string
+}
+export const addPostCreator = (newPostText: string): AddPostActionType =>  ({type: ADD_POST, newPostText})
+type SetUserProfileActionType = {
+    type: typeof SET_USER_PROFILE
+    profile: ProfileType
+}
+export const setUserProfile = (profile: ProfileType): SetUserProfileActionType => ({type: SET_USER_PROFILE, profile})
+type SetStatusActionType = {
+    type: typeof SET_STATUS
+    status: string
+}
+export const setStatus = (status: string): SetStatusActionType => ({type: SET_STATUS, status})
+type deletePosACtionType = {
+    type: typeof DELETE_POST,
+    postId: number
+}
+export const deletePost = (postId: number): deletePosACtionType => ({type: DELETE_POST, postId})
+type SavePhotoSuccessActionType = {
+    type: typeof SAVE_PHOTO_SUCCESS,
+    photos: PhotosType
+}
+export const savePhotoSuccess = (photos: PhotosType): SavePhotoSuccessActionType => ({type: SAVE_PHOTO_SUCCESS, photos})
+export const getUserProfile = (userId: number) => async (dispatch: any) => {
     let data = await usersApi.getProfile(userId)
 
     dispatch(setUserProfile(data))
 }
 
-export const getStatus = (userId) => async (dispatch) => {
+export const getStatus = (userId: number) => async (dispatch: any) => {
     let data = await profileApi.getStatus(userId)
 
     dispatch(setStatus(data))
 }
 
-export const updateStatus = (status) => async (dispatch) => {
+export const updateStatus = (status: string) => async (dispatch: any) => {
     try {
         let data = await profileApi.updateStatus(status)
 
@@ -96,7 +120,7 @@ export const updateStatus = (status) => async (dispatch) => {
     }
 }
 
-export const savePhoto = (file) => async (dispatch) => {
+export const savePhoto = (file: any) => async (dispatch: any) => {
     let data = await profileApi.savePhoto(file)
 
     if(data.resultCode === 0) {
@@ -104,7 +128,7 @@ export const savePhoto = (file) => async (dispatch) => {
     }
 }
 
-export const saveProfile = (profile) => async (dispatch, getState) => {
+export const saveProfile = (profile: ProfileType) => async (dispatch: any, getState: any) => {
 
     const userId = getState().auth.userId
     const data = await profileApi.saveProfile(profile)
