@@ -56,7 +56,7 @@ class App extends React.Component {
                         <Route path='/settings'
                                render={() => <Settings/>}/>
                         <Route path='/users'
-                               render={() => <UsersContainer/>}/>
+                               render={() => <UsersContainer pageTitle='Самураи' />}/>
                         <Route path='/login'
                                render={() => <LoginContainer/>}/>
                         <Route path='*'
