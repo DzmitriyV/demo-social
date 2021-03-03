@@ -30,7 +30,7 @@ const ProfileInfo = ({profile, status, updateStatus, isOwner, savePhoto, savePro
         <div>
             {/*<div><img  src="https://p.bigstockphoto.com/GeFvQkBbSLaMdpKXF1Zv_bigstock-Aerial-View-Of-Blue-Lakes-And--227291596.jpg" /></div>*/}
             <div className={s.descriptionBlock}>
-                <img className={s.mainPhoto} src={profile.photos.large || userPhoto}/>
+                <img className={s.mainPhoto} src={profile.photos.large || userPhoto}/>12312312
                 {isOwner && <input type="file" onChange={onMainPhotoSelected}/>}
                 { editMode ? <ProfileDataForm initialValues={profile} profile={profile} onSubmit={onSubmit} /> : <ProfileData profile={profile} isOwner={isOwner} goToEditMode={() => {setEditMode(true)}} /> }
                 <ProfileStatusWithHooks status={status} updateStatus={updateStatus}/>
