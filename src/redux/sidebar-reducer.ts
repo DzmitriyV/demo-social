@@ -8,9 +8,11 @@ let initialState = {
 
 export type InitialStateType = typeof initialState
 
-const sidebarReducer = (state = initialState, action: any): InitialStateType => {
+const sidebarReducer = (state = initialState, action: ActionsType): InitialStateType => {
     let stateCopy = {...state}
     return stateCopy
 }
+
+type ActionsType = any
 
 export default sidebarReducer

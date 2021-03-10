@@ -1,5 +1,7 @@
-import {authApi} from "../api/api";
-import {stopSubmit} from "redux-form";
+import {authApi} from "../api/api"
+import {stopSubmit} from "redux-form"
+import {ThunkAction} from "redux-thunk"
+import {AppStateType} from "./redux-store"
 
 const SET_USER_DATA = 'kamasutra-network/auth/SET_USER_DATA'
 const GET_CAPTCHA_URL_SUCCESS = 'kamasutra-network/auth/GET_CAPTCHA_URL_SUCCESS'
@@ -22,7 +24,7 @@ let initialState = {
 
 export type InitialStateType = typeof initialState
 
-const authReducer = (state = initialState, action:any): InitialStateType => {
+const authReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case SET_USER_DATA:
         case GET_CAPTCHA_URL_SUCCESS:
@@ -34,6 +36,8 @@ const authReducer = (state = initialState, action:any): InitialStateType => {
             return state
     }
 }
+
+type ActionsTypes = SetUserDataActionType | GetCaptchaUrlSuccessActionType
 
 type SetUserDataActionPayloadType = {
     userId: number | null
@@ -56,7 +60,9 @@ type GetCaptchaUrlSuccessActionType = {
 
 export const getCaptchaUrlSuccess = (captchaUrl: string): GetCaptchaUrlSuccessActionType =>  ({type: GET_CAPTCHA_URL_SUCCESS, payload: {captchaUrl}})
 
-export const getUserData = () => async (dispatch: any) => {
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+
+export const getUserData = (): ThunkType => async (dispatch) => {
     let data = await authApi.me()
 
     if(data.resultCode === 0) {
@@ -65,7 +71,7 @@ export const getUserData = () => async (dispatch: any) => {
     }
 }
 
-export const login = (email: string, password: string, rememberMe: boolean, captcha: string) => async (dispatch: any) => {
+export const login = (email: string, password: string, rememberMe: boolean, captcha: string): ThunkType  => async (dispatch) => {
     let data = await authApi.login(email, password, rememberMe, captcha)
 
     if(data.resultCode === 0) {
@@ -75,17 +81,19 @@ export const login = (email: string, password: string, rememberMe: boolean, capt
             dispatch(getCaptchaUrl())
         }
         let message= data.messages.length > 0 ? data.messages[0] : 'Some error'
+
+        // @ts-ignore
         dispatch(stopSubmit('login', {_error: message}))
     }
 }
 
-export const getCaptchaUrl = () => async (dispatch: any) => {
+export const getCaptchaUrl = (): ThunkType  => async (dispatch) => {
     let data = await authApi.getCaptcha()
     const captchaUrl = data.url
     dispatch(getCaptchaUrlSuccess(captchaUrl))
 }
 
-export const logout = () => async (dispatch: any) => {
+export const logout = (): ThunkType  => async (dispatch) => {
     let data = await authApi.logout()
 
     if(data.resultCode === 0) {

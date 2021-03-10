@@ -1,6 +1,8 @@
-import {profileApi, usersApi} from "../api/api";
-import {stopSubmit} from "redux-form";
-import {PhotosType, PostType, ProfileType} from "../types/types";
+import {profileApi, usersApi} from "../api/api"
+import {stopSubmit} from "redux-form"
+import {PhotosType, PostType, ProfileType} from "../types/types"
+import {ThunkAction} from "redux-thunk";
+import {AppStateType} from "./redux-store";
 
 const ADD_POST = 'kamasutra-network/profile/ADD-POST'
 const SET_USER_PROFILE = 'kamasutra-network/profile/SET_USER_PROFILE'
@@ -28,7 +30,7 @@ let initialState = {
 
 export type InitialStateType = typeof initialState
 
-const profileReducer = (state = initialState, action: any): InitialStateType => {
+const profileReducer = (state = initialState, action: ActionsTypes): InitialStateType => {
     switch (action.type) {
         case ADD_POST: {
             let newPost = {
@@ -71,44 +73,53 @@ const profileReducer = (state = initialState, action: any): InitialStateType => 
     }
 }
 
+type ActionsTypes = AddPostActionType | SetUserProfileActionType | SetStatusActionType | deletePosACtionType | SavePhotoSuccessActionType
+
 type AddPostActionType = {
     type: typeof ADD_POST
     newPostText: string
 }
 export const addPostCreator = (newPostText: string): AddPostActionType =>  ({type: ADD_POST, newPostText})
+
 type SetUserProfileActionType = {
     type: typeof SET_USER_PROFILE
     profile: ProfileType
 }
 export const setUserProfile = (profile: ProfileType): SetUserProfileActionType => ({type: SET_USER_PROFILE, profile})
+
 type SetStatusActionType = {
     type: typeof SET_STATUS
     status: string
 }
 export const setStatus = (status: string): SetStatusActionType => ({type: SET_STATUS, status})
+
 type deletePosACtionType = {
     type: typeof DELETE_POST,
     postId: number
 }
 export const deletePost = (postId: number): deletePosACtionType => ({type: DELETE_POST, postId})
+
 type SavePhotoSuccessActionType = {
     type: typeof SAVE_PHOTO_SUCCESS,
     photos: PhotosType
 }
 export const savePhotoSuccess = (photos: PhotosType): SavePhotoSuccessActionType => ({type: SAVE_PHOTO_SUCCESS, photos})
-export const getUserProfile = (userId: number) => async (dispatch: any) => {
+
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+
+export const getUserProfile = (userId: number | null): ThunkType => async (dispatch) => {
     let data = await usersApi.getProfile(userId)
 
     dispatch(setUserProfile(data))
 }
 
-export const getStatus = (userId: number) => async (dispatch: any) => {
+export const getStatus = (userId: number): ThunkType => async (dispatch) => {
     let data = await profileApi.getStatus(userId)
 
     dispatch(setStatus(data))
 }
 
-export const updateStatus = (status: string) => async (dispatch: any) => {
+export const updateStatus = (status: string): ThunkType => async (dispatch) => {
     try {
         let data = await profileApi.updateStatus(status)
 
@@ -120,7 +131,7 @@ export const updateStatus = (status: string) => async (dispatch: any) => {
     }
 }
 
-export const savePhoto = (file: any) => async (dispatch: any) => {
+export const savePhoto = (file: any): ThunkType => async (dispatch) => {
     let data = await profileApi.savePhoto(file)
 
     if(data.resultCode === 0) {
@@ -128,7 +139,7 @@ export const savePhoto = (file: any) => async (dispatch: any) => {
     }
 }
 
-export const saveProfile = (profile: ProfileType) => async (dispatch: any, getState: any) => {
+export const saveProfile = (profile: ProfileType): ThunkType => async (dispatch, getState) => {
 
     const userId = getState().auth.userId
     const data = await profileApi.saveProfile(profile)
@@ -136,7 +147,8 @@ export const saveProfile = (profile: ProfileType) => async (dispatch: any, getSt
     if(data.resultCode === 0) {
         dispatch(getUserProfile(userId))
     } else {
-        let message= data.messages.length > 0 ? data.messages[0] : 'Some error'
+        let message = data.messages.length > 0 ? data.messages[0] : 'Some error'
+        // @ts-ignore
         dispatch(stopSubmit('profile-data', {_error: message}))
         return Promise.reject(message)
     }
