@@ -1,4 +1,4 @@
-import {authApi} from "../api/api"
+import {authApi, ResultCodeEnum, ResultCodeForCaptcha} from "../api/api"
 import {stopSubmit} from "redux-form"
 import {ThunkAction} from "redux-thunk"
 import {AppStateType} from "./redux-store"
@@ -65,7 +65,7 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 export const getUserData = (): ThunkType => async (dispatch) => {
     let data = await authApi.me()
 
-    if(data.resultCode === 0) {
+    if(data.resultCode === ResultCodeEnum.Success) {
         let {id, login, email} = data.data
         dispatch(setUserData(id, login, email, true))
     }
@@ -74,10 +74,10 @@ export const getUserData = (): ThunkType => async (dispatch) => {
 export const login = (email: string, password: string, rememberMe: boolean, captcha: string): ThunkType  => async (dispatch) => {
     let data = await authApi.login(email, password, rememberMe, captcha)
 
-    if(data.resultCode === 0) {
+    if(data.resultCode ===  ResultCodeEnum.Success) {
         dispatch(getUserData())
     } else {
-        if(data.resultCode === 10) {
+        if(data.resultCode === ResultCodeForCaptcha.CaptchaIsReqiuired) {
             dispatch(getCaptchaUrl())
         }
         let message= data.messages.length > 0 ? data.messages[0] : 'Some error'
