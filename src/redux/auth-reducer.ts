@@ -77,7 +77,7 @@ export const login = (email: string, password: string, rememberMe: boolean, capt
     if(data.resultCode ===  ResultCodeEnum.Success) {
         dispatch(getUserData())
     } else {
-        if(data.resultCode === ResultCodeForCaptcha.CaptchaIsReqiuired) {
+        if(data.resultCode === ResultCodeForCaptcha.CaptchaIsRequired) {
             dispatch(getCaptchaUrl())
         }
         let message= data.messages.length > 0 ? data.messages[0] : 'Some error'

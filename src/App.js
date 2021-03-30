@@ -1,6 +1,6 @@
-import React, {Suspense} from 'react'
+import React from 'react'
 import './App.css'
-import {BrowserRouter, HashRouter, Redirect, Route, Switch, withRouter} from 'react-router-dom'
+import {BrowserRouter, Redirect, Route, Switch, withRouter} from 'react-router-dom'
 import News from './components/News/News'
 import Music from './components/Music/Music'
 import Settings from './components/Settings/Settings'

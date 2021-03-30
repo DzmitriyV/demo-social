@@ -39,14 +39,14 @@ export const usersApi = {
         return instance.delete<UnfollowResponseType>(`follow/${userId}`)
             .then(response => response.data)
     },
-    getProfile(userId: number) {
+    getProfile(userId: number | null) {
         console.warn('Obsolete methos. Pelase use profileApi object.')
         return profileApi.getProfile(userId)
     }
 }
 
 export const profileApi = {
-    getProfile(userId: number) {
+    getProfile(userId: number | null) {
         return instance.get(`profile/${userId}`)
             .then(response => response.data)
     },
@@ -97,7 +97,7 @@ export enum ResultCodeEnum {
 }
 
 export enum ResultCodeForCaptcha {
-    CaptchaIsReqiuired = 10
+    CaptchaIsRequired = 10
 }
 
 export const authApi = {
